@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -14,7 +15,7 @@ class Location extends StatefulWidget {
 }
 
 class _LocationState extends State<Location> {
-  String latData, longData, citySata;
+  String latData, longData, output = '...';
   void getWeather() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -56,8 +57,8 @@ class _LocationState extends State<Location> {
 
     print('getting location...');
     Position position = await Geolocator.getCurrentPosition(
-      forceAndroidLocationManager: true,
-      desiredAccuracy: LocationAccuracy.lowest,
+      //forceAndroidLocationManager: true,
+      desiredAccuracy: LocationAccuracy.high,
     );
     print('lat:');
     print(position.latitude.toString());
@@ -65,13 +66,21 @@ class _LocationState extends State<Location> {
   }
 
   void getData(double lat, double lon) async {
+    String daytime;
+    setState(() {
+      output = 'calling weather api..';
+    });
     var uri = Uri.parse(
         'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&units=metric&appid=7c58b9aee0f46df2661b4d6da17fb041');
     http.Response response = await http.get(uri);
     if (response.statusCode == 200) {
+      setState(() {
+        output = 'weather recieved';
+      });
       var source = response.body;
       var city = jsonDecode(source)['name'];
       var weather = jsonDecode(source)['weather'][0]['main'];
+      var dayIcon = jsonDecode(source)['weather'][0]['icon'];
       var weatherDescription = jsonDecode(source)['weather'][0]['description'];
       var temp = jsonDecode(source)['main']['temp'];
       var weatherCode = jsonDecode(source)['weather'][0]['id'];
@@ -81,19 +90,27 @@ class _LocationState extends State<Location> {
       weatherDescription = toBeginningOfSentenceCase(weatherDescription);
       print(city);
       print(weatherDescription);
-      print(temp);
+      print(weatherCode);
+
+      if (dayIcon.toString().endsWith('d')) {
+        daytime = 'day';
+      } else {
+        daytime = 'night';
+      }
 
       var imgApi = Uri.parse(
-          'https://api.unsplash.com/search/photos?query=$weather&client_id=7nK3X3iEPmcNodYN8-apzG5rWKWRwiAFAAmsdVJW26E');
+          'https://api.unsplash.com/search/photos?query=$daytime%$weather&client_id=7nK3X3iEPmcNodYN8-apzG5rWKWRwiAFAAmsdVJW26E');
       http.Response imgResponse = await http.get(imgApi);
 
       setState(() {
-        citySata = city;
+        output = 'calling image api...';
       });
       int actualTemp = temp.toInt();
       actualTemp = num.parse(actualTemp.toStringAsFixed(0));
       temp = actualTemp;
-
+      setState(() {
+        output = 'gcreating weather object...';
+      });
       Weather locationWeather = Weather(
         city: city,
         weather: weather,
@@ -103,11 +120,14 @@ class _LocationState extends State<Location> {
         sunset: sunset,
         weatherCode: weatherCode,
         time: time,
+        isDay: dayIcon.toString().endsWith('d'),
       );
       if (imgResponse.statusCode == 200) {
-        
-        String imgUrl =
-            jsonDecode(imgResponse.body)['results'][Random().nextInt(10)]['urls']['full'];
+        setState(() {
+          output = 'image recieved';
+        });
+        String imgUrl = jsonDecode(imgResponse.body)['results']
+            [Random().nextInt(10)]['urls']['full'];
         print('Image Response: ');
         print(imgResponse.statusCode);
         Navigator.push(
@@ -134,14 +154,20 @@ class _LocationState extends State<Location> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Location'),
-      ),
       backgroundColor: Colors.black,
       body: Center(
-          child: SpinKitWave(
-        color: Colors.yellow,
-        size: 100,
+          child: Column(
+        children: [
+          SpinKitWave(
+            color: Colors.yellow,
+            size: 100,
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Text(output,
+              style: GoogleFonts.ubuntu(fontSize: 10, color: Colors.white))
+        ],
       )),
     );
   }
