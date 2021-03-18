@@ -23,15 +23,15 @@ class Weather {
     DateTime uTime = DateTime.fromMillisecondsSinceEpoch(time * 1000);
     // print(sunDown);
     // print(uTime);
-    print(now);
-    print(Random().nextInt(10));    
+    print(sunDown);
+        
 
     // print(sunUp);
-    print(weatherCode);
+    
     int hours = sunUp.difference(now).inHours;
     int minutes = sunUp.difference(now).inMinutes % 60;
-    print(hours.toString() + 'H' + minutes.toString() + 'm ' + 'before sunset');
-    return hours.toString() + 'H ' + minutes.toString() + 'M';
+    print(sunUp.hour.toString() + 'H' + sunUp.minute.toString() + 'm ' + 'before sunset');
+    return hours.toString() + ': ' + minutes.toString() + 'M';
   }
 
   IconData getWeatherIcon() {
