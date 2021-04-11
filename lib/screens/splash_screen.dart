@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:weather_app/utilities/location_weather.dart';
+import '../utilities/location.dart';
 
 class SplashScreen extends StatelessWidget {
   final Weather weather;
@@ -13,6 +14,17 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Location(),
+          ),
+        ),
+        backgroundColor: Colors.blue,
+        child: Icon(Icons.replay),
+      ),
       body: Container(
         height: size.height,
         width: size.width,
@@ -34,23 +46,20 @@ class SplashScreen extends StatelessWidget {
                   Icon(
                     weather.getWeatherIcon(),
                     size: size.height * .15,
-                    
                   ),
                   Stack(
                     children: [
                       Text(weather.temp.toString() + '°',
                           style: GoogleFonts.montserrat(
-                            foreground: Paint()
-                              ..style = PaintingStyle.stroke
-                              ..strokeWidth = 5
-                              ..color = Colors.white30,
+                              foreground: Paint()
+                                ..style = PaintingStyle.stroke
+                                ..strokeWidth = 5
+                                ..color = Colors.white30,
                               fontWeight: FontWeight.w700,
                               fontSize: 100)),
-                              Text(weather.temp.toString() + '°',
+                      Text(weather.temp.toString() + '°',
                           style: GoogleFonts.montserrat(
-                            
-                              fontWeight: FontWeight.w700,
-                              fontSize: 100)),
+                              fontWeight: FontWeight.w700, fontSize: 100)),
                     ],
                   ),
                 ],
@@ -67,7 +76,7 @@ class SplashScreen extends StatelessWidget {
                           ..color = Colors.white30,
                         fontWeight: FontWeight.w700,
                         fontSize: size.height * .07)),
-                        Text('${weather.weatherDescription} at ${weather.city}',
+                Text('${weather.weatherDescription} at ${weather.city}',
                     style: GoogleFonts.montserrat(
                         fontWeight: FontWeight.w700,
                         fontSize: size.height * .07)),
