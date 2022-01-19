@@ -8,6 +8,7 @@ import 'package:weather_app/screens/splash_screen.dart';
 import 'package:weather_app/utilities/location_weather.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
+import '../keys.dart';
 
 class Location extends StatefulWidget {
   @override
@@ -71,7 +72,7 @@ class _LocationState extends State<Location> {
       output = 'calling weather api..';
     });
     var uri = Uri.parse(
-        'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&units=metric&appid=7c58b9aee0f46df2661b4d6da17fb041');
+        'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&units=metric&appid=$apiKey');
     http.Response response = await http.get(uri);
     if (response.statusCode == 200) {
       setState(() {
